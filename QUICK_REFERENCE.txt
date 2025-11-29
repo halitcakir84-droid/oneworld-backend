@@ -1,0 +1,129 @@
+# ⚡ QUICK REFERENCE - One World Backend
+
+## 📋 DEINE WICHTIGSTEN URLs
+
+Backend API:
+https://oneworld-backend.onrender.com
+
+Admin-Panel:
+https://oneworld-backend.onrender.com/admin
+Login: admin@oneworld.com / admin123
+
+Health Check:
+https://oneworld-backend.onrender.com/health
+
+Settings API:
+https://oneworld-backend.onrender.com/api/v1/settings
+
+---
+
+## 🔑 WICHTIGE BEFEHLE
+
+### In Render Shell ausführen:
+
+# Datenbank erstellen
+node src/database/migrate.js
+node src/database/migrate-settings.js
+
+# Daten einfügen
+node src/database/seed-settings.js
+node src/database/seed-admin.js
+
+---
+
+## 📱 MOBILE APP VERBINDEN
+
+Datei: src/config/env.ts
+
+Ändere:
+API_BASE_URL: 'https://oneworld-backend.onrender.com'
+
+Dann: npm start
+
+---
+
+## ⚙️ ENVIRONMENT VARIABLES
+
+Kopiere in Render Dashboard → Environment Variables:
+
+NODE_ENV = production
+PORT = 3000
+DATABASE_URL = [Internal Database URL von PostgreSQL]
+JWT_SECRET = a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
+ADMIN_SESSION_SECRET = x9y8z7a6b5c4d3e2f1g0h9i8j7k6l5m4
+API_VERSION = v1
+CORS_ORIGIN = *
+
+---
+
+## 🎯 DEPLOYMENT SCHRITTE (Kurz)
+
+1. Code → GitHub
+2. Render Account
+3. PostgreSQL erstellen (Free)
+4. Web Service erstellen (Free)
+5. Environment Variables setzen
+6. Deploy & warten
+7. Shell → Migrations ausführen
+8. Testen!
+
+---
+
+## 🐛 FEHLER? CHECK:
+
+❌ Backend startet nicht
+→ Logs checken in Render
+→ Environment Variables prüfen
+
+❌ Database Error
+→ DATABASE_URL korrekt?
+→ INTERNAL Database URL nutzen!
+
+❌ Admin Login geht nicht
+→ seed-admin.js ausgeführt?
+
+❌ 404 Errors
+→ Route existiert?
+→ API_VERSION = v1 gesetzt?
+
+---
+
+## 📊 WICHTIGSTE API ENDPOINTS
+
+GET  /health                    Health Check
+GET  /api/v1/settings          Alle Settings
+GET  /api/v1/votings/current   Aktuelle Abstimmung
+POST /api/v1/auth/login        User Login
+POST /api/v1/votings/vote      Abstimmen
+POST /admin/api/login          Admin Login
+
+---
+
+## ✅ CHECKLISTE
+
+[ ] GitHub Repository erstellt
+[ ] Code hochgeladen
+[ ] Render Account
+[ ] PostgreSQL DB erstellt
+[ ] Internal Database URL kopiert
+[ ] Web Service erstellt
+[ ] Environment Variables gesetzt
+[ ] Deployed (Status: Live)
+[ ] migrate.js ausgeführt
+[ ] migrate-settings.js ausgeführt
+[ ] seed-settings.js ausgeführt
+[ ] seed-admin.js ausgeführt
+[ ] /health funktioniert ✅
+[ ] /admin funktioniert ✅
+[ ] Mobile App connected ✅
+
+---
+
+## 🎉 FERTIG!
+
+Dein Backend läuft!
+
+Admin: https://oneworld-backend.onrender.com/admin
+API: https://oneworld-backend.onrender.com/api/v1/
+
+Jetzt Mobile App verbinden und testen! 🚀
