@@ -91,7 +91,7 @@ app.use(`/api/${apiVersion}/settings`, settingsRoutes);
 app.use('/admin', adminRoutes);
 
 // Static files (uploads)
-app.use('/uploads', express.strict('/uploads'));
+app.use('/uploads', express.static('uploads'));
 
 // 404 handler
 app.use((req, res) => {
