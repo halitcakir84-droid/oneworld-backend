@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One World - Admin Einstellungen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #F5F7FA;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            color: #666;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            background: #E3F2FD;
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .tab-content {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #E0E0E0;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            margin-bottom: 12px;
+            background: #F8F9FA;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        
+        .setting-item:hover {
+            background: #E3F2FD;
+        }
+        
+        .setting-info {
+            flex: 1;
+        }
+        
+        .setting-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .setting-description {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .toggle.active {
+            background: #4CAF50;
+        }
+        
+        .toggle-circle {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: left 0.3s;
+        }
+        
+        .toggle.active .toggle-circle {
+            left: 33px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        input[type="text"],
+        input[type="color"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .color-picker-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        
+        .color-input {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .color-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            border: 2px solid #ddd;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .success-message {
+            display: none;
+            padding: 12px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        
+        .tab-pane {
+            display: none;
+        }
+        
+        .tab-pane.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ Einstellungen</h1>
+            <p>Verwalte Features, Texte, Theme und mehr</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('features')">🎯 Features</button>
+            <button class="tab" onclick="switchTab('texts')">📝 Texte</button>
+            <button class="tab" onclick="switchTab('theme')">🎨 Theme</button>
+            <button class="tab" onclick="switchTab('navigation')">🧭 Navigation</button>
+        </div>
+
+        <div id="successMessage" class="success-message">
+            ✅ Änderungen erfolgreich gespeichert!
+        </div>
+
+        <!-- Features Tab -->
+        <div id="features-tab" class="tab-pane active">
+            <div class="tab-content">
+                <h2 class="section-title">Feature Flags</h2>
+                
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-name">Abstimmungen</div>
+                        <div class="setting-description">Aktiviert das Abstimmungs-Feature</div>
+                    </div>
+                    <div class="toggle active" id="feature-enable_voting" onclick="toggleFeature('enable_voting')">
+                        <div class="toggle-circle"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-name">Spenden</div>
+                        <div class="setting-description">Aktiviert das Spenden-Feature</div>
+                    </div>
+                    <div class="toggle active" id="feature-enable_donations" onclick="toggleFeature('enable_donations')">
+                        <div class="toggle-circle"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-name">Leaderboard</div>
+                        <div class="setting-description">Zeigt Rangliste der aktivsten User</div>
+                    </div>
+                    <div class="toggle active" id="feature-enable_leaderboard" onclick="toggleFeature('enable_leaderboard')">
+                        <div class="toggle-circle"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-name">Erfolge & Badges</div>
+                        <div class="setting-description">Aktiviert Erfolge und Badges</div>
+                    </div>
+                    <div class="toggle" id="feature-enable_achievements" onclick="toggleFeature('enable_achievements')">
+                        <div class="toggle-circle"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-name">Dark Mode</div>
+                        <div class="setting-description">Ermöglicht dunkles Theme</div>
+                    </div>
+                    <div class="toggle active" id="feature-enable_dark_mode" onclick="toggleFeature('enable_dark_mode')">
+                        <div class="toggle-circle"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-name">Push Benachrichtigungen</div>
+                        <div class="setting-description">Erlaubt Push Notifications</div>
+                    </div>
+                    <div class="toggle active" id="feature-enable_notifications" onclick="toggleFeature('enable_notifications')">
+                        <div class="toggle-circle"></div>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="saveFeatures()">💾 Features speichern</button>
+            </div>
+        </div>
+
+        <!-- Texts Tab -->
+        <div id="texts-tab" class="tab-pane">
+            <div class="tab-content">
+                <h2 class="section-title">App-Texte bearbeiten</h2>
+                
+                <div class="input-group">
+                    <label class="input-label">Willkommens-Titel</label>
+                    <input type="text" id="text-welcome_title" value="Willkommen bei One World" />
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Willkommens-Untertitel</label>
+                    <input type="text" id="text-welcome_subtitle" value="Gemeinsam Gutes tun" />
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Abstimmen-Button</label>
+                    <input type="text" id="text-btn_vote" value="Abstimmen" />
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Spenden-Button</label>
+                    <input type="text" id="text-btn_donate" value="Jetzt spenden" />
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Abstimmungs-Titel</label>
+                    <input type="text" id="text-voting_title" value="Projekt-Abstimmung" />
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Abstimmungs-Frage</label>
+                    <input type="text" id="text-voting_subtitle" value="Welches Projekt soll als nächstes starten?" />
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Erfolgsmeldung (Abstimmung)</label>
+                    <input type="text" id="text-voting_success" value="Deine Stimme wurde gezählt!" />
+                </div>
+
+                <button class="btn" onclick="saveTexts()">💾 Texte speichern</button>
+            </div>
+        </div>
+
+        <!-- Theme Tab -->
+        <div id="theme-tab" class="tab-pane">
+            <div class="tab-content">
+                <h2 class="section-title">Theme-Farben anpassen</h2>
+                
+                <div class="color-picker-group">
+                    <div class="input-group">
+                        <label class="input-label">Primary Color</label>
+                        <div class="color-input">
+                            <input type="color" id="color-primary" value="#4A90E2" />
+                            <div class="color-preview" style="background: #4A90E2"></div>
+                            <span>#4A90E2</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Secondary Color</label>
+                        <div class="color-input">
+                            <input type="color" id="color-secondary" value="#764ba2" />
+                            <div class="color-preview" style="background: #764ba2"></div>
+                            <span>#764ba2</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Accent Color</label>
+                        <div class="color-input">
+                            <input type="color" id="color-accent" value="#5CB85C" />
+                            <div class="color-preview" style="background: #5CB85C"></div>
+                            <span>#5CB85C</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Button Color</label>
+                        <div class="color-input">
+                            <input type="color" id="color-button" value="#4A90E2" />
+                            <div class="color-preview" style="background: #4A90E2"></div>
+                            <span>#4A90E2</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Success Color</label>
+                        <div class="color-input">
+                            <input type="color" id="color-success" value="#5CB85C" />
+                            <div class="color-preview" style="background: #5CB85C"></div>
+                            <span>#5CB85C</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Error Color</label>
+                        <div class="color-input">
+                            <input type="color" id="color-error" value="#DC3545" />
+                            <div class="color-preview" style="background: #DC3545"></div>
+                            <span>#DC3545</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="saveTheme()">💾 Theme speichern</button>
+                <button class="btn btn-secondary" onclick="resetTheme()">🔄 Zurücksetzen</button>
+            </div>
+        </div>
+
+        <!-- Navigation Tab -->
+        <div id="navigation-tab" class="tab-pane">
+            <div class="tab-content">
+                <h2 class="section-title">Navigation verwalten</h2>
+                
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-name">🏠 Startseite</div>
+                        <div class="setting-description">Hauptseite der App</div>
+                    </div>
+                    <div class="toggle active" id="nav-home" onclick="toggleNav('home')">
+                        <div class="toggle-circle"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-name">🗳️ Abstimmung</div>
+                        <div class="setting-description">Projekt-Abstimmungen</div>
+                    </div>
+                    <div class="toggle active" id="nav-voting" onclick="toggleNav('voting')">
+                        <div class="toggle-circle"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-name">📁 Projekte</div>
+                        <div class="setting-description">Übersicht aller Projekte</div>
+                    </div>
+                    <div class="toggle active" id="nav-projects" onclick="toggleNav('projects')">
+                        <div class="toggle-circle"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-name">💚 Spenden</div>
+                        <div class="setting-description">Spenden-Bereich</div>
+                    </div>
+                    <div class="toggle active" id="nav-donate" onclick="toggleNav('donate')">
+                        <div class="toggle-circle"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-name">👤 Profil</div>
+                        <div class="setting-description">User-Profil</div>
+                    </div>
+                    <div class="toggle active" id="nav-profile" onclick="toggleNav('profile')">
+                        <div class="toggle-circle"></div>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="saveNavigation()">💾 Navigation speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        // Toggle feature
+        function toggleFeature(key) {
+            const toggle = document.getElementById('feature-' + key);
+            toggle.classList.toggle('active');
+        }
+
+        // Toggle navigation
+        function toggleNav(key) {
+            const toggle = document.getElementById('nav-' + key);
+            toggle.classList.toggle('active');
+        }
+
+        // Save functions
+        function saveFeatures() {
+            // Collect all feature flags
+            const features = {};
+            document.querySelectorAll('[id^="feature-"]').forEach(toggle => {
+                const key = toggle.id.replace('feature-', '');
+                features[key] = toggle.classList.contains('active');
+            });
+
+            console.log('Saving features:', features);
+            
+            // TODO: API call
+            // fetch('/api/v1/settings/features', {
+            //     method: 'POST',
+            //     body: JSON.stringify(features)
+            // })
+
+            showSuccess();
+        }
+
+        function saveTexts() {
+            const texts = {};
+            document.querySelectorAll('[id^="text-"]').forEach(input => {
+                const key = input.id.replace('text-', '');
+                texts[key] = input.value;
+            });
+
+            console.log('Saving texts:', texts);
+            
+            // TODO: API call
+            // fetch('/api/v1/settings/texts', {
+            //     method: 'POST',
+            //     body: JSON.stringify(texts)
+            // })
+
+            showSuccess();
+        }
+
+        function saveTheme() {
+            const theme = {
+                primary_color: document.getElementById('color-primary').value,
+                secondary_color: document.getElementById('color-secondary').value,
+                accent_color: document.getElementById('color-accent').value,
+                button_color: document.getElementById('color-button').value,
+                success_color: document.getElementById('color-success').value,
+                error_color: document.getElementById('color-error').value,
+            };
+
+            console.log('Saving theme:', theme);
+            
+            // TODO: API call
+            // fetch('/api/v1/settings/theme/1', {
+            //     method: 'PUT',
+            //     body: JSON.stringify(theme)
+            // })
+
+            showSuccess();
+        }
+
+        function resetTheme() {
+            if (confirm('Theme auf Standard zurücksetzen?')) {
+                document.getElementById('color-primary').value = '#4A90E2';
+                document.getElementById('color-secondary').value = '#764ba2';
+                document.getElementById('color-accent').value = '#5CB85C';
+                document.getElementById('color-button').value = '#4A90E2';
+                document.getElementById('color-success').value = '#5CB85C';
+                document.getElementById('color-error').value = '#DC3545';
+            }
+        }
+
+        function saveNavigation() {
+            const navigation = {};
+            document.querySelectorAll('[id^="nav-"]').forEach(toggle => {
+                const key = toggle.id.replace('nav-', '');
+                navigation[key] = toggle.classList.contains('active');
+            });
+
+            console.log('Saving navigation:', navigation);
+            
+            // TODO: API call
+
+            showSuccess();
+        }
+
+        function showSuccess() {
+            const msg = document.getElementById('successMessage');
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 3000);
+        }
+
+        // Update color preview on change
+        document.querySelectorAll('input[type="color"]').forEach(input => {
+            input.addEventListener('change', (e) => {
+                const preview = e.target.nextElementSibling;
+                const label = preview.nextElementSibling;
+                preview.style.background = e.target.value;
+                label.textContent = e.target.value;
+            });
+        });
+    </script>
+</body>
+</html>
