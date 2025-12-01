@@ -2,8 +2,9 @@ const { pool } = require('../config/database');
 const logger = require('../utils/logger');
 
 /**
- * Settings Database Migration
+ * Settings Database Migration - FIXED VERSION
  * 
+ * Drops existing tables and recreates them fresh
  * Creates tables for:
  * - Feature Flags
  * - App Texts/Labels
@@ -15,11 +16,26 @@ const createSettingsTables = async () => {
   const client = await pool.connect();
   
   try {
-    logger.info('🔄 Creating settings tables...');
+    logger.info('🔄 Dropping existing settings tables...');
+    
+    // DROP existing tables (CASCADE to handle dependencies)
+    await client.query(`
+      DROP TABLE IF EXISTS app_config CASCADE;
+      DROP TABLE IF EXISTS navigation_tabs CASCADE;
+      DROP TABLE IF EXISTS theme_settings CASCADE;
+      DROP TABLE IF EXISTS app_texts CASCADE;
+      DROP TABLE IF EXISTS feature_flags CASCADE;
+    `);
+    
+    logger.info('✅ Old tables dropped');
+    logger.info('🔄 Creating fresh settings tables...');
+    
+    // Enable UUID extension
+    await client.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`);
     
     // Feature Flags Table
     await client.query(`
-      CREATE TABLE IF NOT EXISTS feature_flags (
+      CREATE TABLE feature_flags (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         key VARCHAR(100) UNIQUE NOT NULL,
         name VARCHAR(255) NOT NULL,
@@ -30,13 +46,14 @@ const createSettingsTables = async () => {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
       
-      CREATE INDEX IF NOT EXISTS idx_feature_flags_key ON feature_flags(key);
-      CREATE INDEX IF NOT EXISTS idx_feature_flags_enabled ON feature_flags(enabled);
+      CREATE INDEX idx_feature_flags_key ON feature_flags(key);
+      CREATE INDEX idx_feature_flags_enabled ON feature_flags(enabled);
     `);
+    logger.info('✅ Feature flags table created');
     
     // App Texts/Labels Table
     await client.query(`
-      CREATE TABLE IF NOT EXISTS app_texts (
+      CREATE TABLE app_texts (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         key VARCHAR(100) NOT NULL,
         language VARCHAR(10) DEFAULT 'de',
@@ -48,13 +65,14 @@ const createSettingsTables = async () => {
         UNIQUE(key, language)
       );
       
-      CREATE INDEX IF NOT EXISTS idx_app_texts_key ON app_texts(key);
-      CREATE INDEX IF NOT EXISTS idx_app_texts_language ON app_texts(language);
+      CREATE INDEX idx_app_texts_key ON app_texts(key);
+      CREATE INDEX idx_app_texts_language ON app_texts(language);
     `);
+    logger.info('✅ App texts table created');
     
     // Theme Settings Table
     await client.query(`
-      CREATE TABLE IF NOT EXISTS theme_settings (
+      CREATE TABLE theme_settings (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         name VARCHAR(100) UNIQUE NOT NULL,
         is_active BOOLEAN DEFAULT false,
@@ -71,10 +89,11 @@ const createSettingsTables = async () => {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
+    logger.info('✅ Theme settings table created');
     
     // Navigation Tabs Table
     await client.query(`
-      CREATE TABLE IF NOT EXISTS navigation_tabs (
+      CREATE TABLE navigation_tabs (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         key VARCHAR(50) UNIQUE NOT NULL,
         title VARCHAR(100) NOT NULL,
@@ -88,13 +107,14 @@ const createSettingsTables = async () => {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
       
-      CREATE INDEX IF NOT EXISTS idx_navigation_enabled ON navigation_tabs(enabled);
-      CREATE INDEX IF NOT EXISTS idx_navigation_order ON navigation_tabs(display_order);
+      CREATE INDEX idx_navigation_enabled ON navigation_tabs(enabled);
+      CREATE INDEX idx_navigation_order ON navigation_tabs(display_order);
     `);
+    logger.info('✅ Navigation tabs table created');
     
     // App Configuration Table (general settings)
     await client.query(`
-      CREATE TABLE IF NOT EXISTS app_config (
+      CREATE TABLE app_config (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         key VARCHAR(100) UNIQUE NOT NULL,
         value JSONB NOT NULL,
@@ -105,11 +125,12 @@ const createSettingsTables = async () => {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
       
-      CREATE INDEX IF NOT EXISTS idx_app_config_key ON app_config(key);
-      CREATE INDEX IF NOT EXISTS idx_app_config_public ON app_config(is_public);
+      CREATE INDEX idx_app_config_key ON app_config(key);
+      CREATE INDEX idx_app_config_public ON app_config(is_public);
     `);
+    logger.info('✅ App config table created');
     
-    logger.info('✅ Settings tables created successfully!');
+    logger.info('✅ All settings tables created successfully!');
     
   } catch (error) {
     logger.error('❌ Settings tables creation failed:', error);
@@ -123,11 +144,11 @@ const createSettingsTables = async () => {
 if (require.main === module) {
   createSettingsTables()
     .then(() => {
-      logger.info('Settings migration completed');
+      logger.info('✅ Settings migration completed successfully');
       process.exit(0);
     })
     .catch((error) => {
-      logger.error('Settings migration failed:', error);
+      logger.error('❌ Settings migration failed:', error);
       process.exit(1);
     });
 }
