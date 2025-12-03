@@ -317,7 +317,7 @@ async function setupDatabase() {
       WHERE table_schema = 'public' 
       ORDER BY table_name;
     `);
-   console.log(`✅ ${usersCount.rows[0].count} admin user(s)\n`);
+    console.log(`✅ Created ${tables.rows.length} tables`);
     
     const flagsCount = await client.query(`SELECT COUNT(*) FROM feature_flags;`);
     console.log(`✅ ${flagsCount.rows[0].count} feature flags`);
@@ -333,7 +333,8 @@ async function setupDatabase() {
     console.log('=====================================\n');
     console.log('Your backend is ready to use!');
     console.log('Test it at: https://oneworld-backend.onrender.com/api/v1/settings\n');
-      } catch (error) {
+    
+  } catch (error) {
     console.error('❌ Error during setup:', error);
     throw error;
   } finally {
@@ -341,6 +342,7 @@ async function setupDatabase() {
     await pool.end();
   }
 }
+
 // Run setup
 setupDatabase()
   .then(() => {
